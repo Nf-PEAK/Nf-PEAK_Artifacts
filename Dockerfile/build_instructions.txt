@@ -1,0 +1,14 @@
+# Build the Docker image
+docker build -t username/nfpeak:latest .
+
+# Verify the image was built
+docker images | grep nfpeak
+
+# Run the Docker container
+docker run -it username/nfpeak:latest /bin/bash
+
+#Login to Docker
+docker login
+
+#Push the image to Docker Hub
+docker push username/nfpeak:latest
