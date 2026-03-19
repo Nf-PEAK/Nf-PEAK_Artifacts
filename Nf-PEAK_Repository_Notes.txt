@@ -1,0 +1,32 @@
+Nf-PEAK Repository Notes
+
+These are accompanying notes for the Git repository of Nf-PEAK, explaining the contents of the repository.
+The repository contains all files required to set up Nf-PEAK on a Kubernetes cluster. To use the files, variables like namespaces, file paths, or node names contained in the files need to be adjusted for the specific cluster. Depending on the number of nodes, it might be necessary to create additional files using the same scheme as presented here to instrument all nodes.
+
+The repository contains the following folders:
+
+Architecture: Contains a figure describing the components and interactions of Nf-PEAK.
+
+Dockerfile: Contains three things. 1. The Dockerfile used to build the containers utilized by Nf-PEAK for energy monitoring. 2. Instructions to build your own version of the container in case you want to make any changes. 3. The source code of the monitoring component for individual processes used in Nf-PEAK and built directly into the container. This component is based on the adapted source code for the tool EnergAt, presented in "Hongyu Hè, Michal Friedman, and Theodoros Rekatsinas. EnergAt: Fine-Grained Energy Attribution for Multi-Tenancy. 4(3), 2024."
+
+Nf-PEAK_Scripts: Contains the shell scripts used for energy monitoring, including the identifications of relevant workloads, pods and processes, mapping of workflow tasks to process IDs, managing the execution of process monitoring, and aggregating results after workflow execution.
+
+Pods: This folder contains the .yaml files used to deploy pods the Kubernetes cluster.
+
+Steps to use Nf-PEAK during workflow execution:
+
+1. Deploy one Nextflow pod on the cluster on one of the worker nodes (adjust parameters in pod_nextflow.yaml for your cluster, then execute "kubectl apply -f pod_nextflow.yaml").
+
+2. Deploy one Nf-PEAK pod on each of the nodes used for workflow execution (adjust parameters in energat-pod-c37.yaml, then execute "kubectl apply -f energat-pod-c37.yaml").
+
+3. Copy one set of the provided shell scripts to the cluster. Make sure that the paths specified in the files are valid for your cluster and persistent volume claims.
+
+4. To start energy monitoring, execute "bash monitor_PIDs.sh".
+
+5. Wait a moment (about 30s) to give the tool some time to measure and compute static energy used by the cluster. The output of monitor_PIDs.sh will confirm when measurement of static energy is complete. Make sure that no other workload is running on the cluster at the time of measurement. If this is not possible directly before starting monitoring, static energy can also be measured separately by executing the commands in the script manually at a point where no workload is executed on the cluster. The information about static energy is then stored in a file on the cluster and can be used during later monitoring. In that case, make sure to comment out the recalculation of static energy in monitor_PIDs.sh to avoid overwriting your valid measurement.
+
+6. When monitoring is running, start a Nextflow workflow in the nextflow pod. Nf-PEAK automatically identifies the Nextflow workflow and starts monitoring each of its processes separately.
+
+7. After workflow completion, you can stop monitoring. Alternatively, it is also possible to keep it running. It will then continue to automatically monitor Nextflow workflows.
+
+8. To aggregate the collected data and convert it to human-readable form, execute "bash aggregate_energy.sh" in one of the Nf-PEAK pods. The results are provided as a human-readable log file and as CSV for further processing.

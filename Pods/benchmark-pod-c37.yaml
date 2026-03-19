@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benchmark-pod-c37
+  namespace: username
+spec:
+  #hostPID: true # <<< added: enable access to other container PIDs on same node
+  nodeSelector:
+    kubernetes.io/hostname: worker-c37
+  containers:
+    - name: benchmark-pod-c37
+      #image: ubuntu
+      image: username/benchmark:latest
+      command: ["/bin/bash", "-c", "sleep infinity"]
+      securityContext:
+        #runAsUser: 0 # <<< added: ensure container runs as root (UID 0)
+      volumeMounts:
+        - mountPath: /RAPL/ #/sys/class/powercap/intel-rapl/
+          name: energy-volume
+          readOnly: true # <<< moved here: read-only mount for powercap
+        - mountPath: /private-data
+          name: private-volume
+  volumes:
+    - name: energy-volume
+      persistentVolumeClaim:
+        claimName: username-energy-pvc-worker-c37
+    - name: private-volume
+      persistentVolumeClaim:
+        claimName: username-pvc

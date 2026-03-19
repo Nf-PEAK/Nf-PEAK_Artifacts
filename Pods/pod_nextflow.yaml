@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  #name: test-pod
+  name: nextflow-pod
+  namespace: username
+spec:
+  containers:
+    #- name: test-pod
+    - name: nextflow-pod
+      image: nextflow/nextflow:24.05.0-edge
+      #image: ubuntu:latest
+      #image: staphb/sratoolkit:3.0.7
+      command: ["sleep"]
+      args: ["infinity"]
+      volumeMounts:
+        - name: username-pvc
+          mountPath: /data
+        - name: username-storage-pvc
+          mountPath: /storage
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: usedby
+                operator: In
+                values:
+                  - username
+  volumes:
+    - name: username-pvc
+      persistentVolumeClaim:
+        claimName: username-pvc
+    - name: username-storage-pvc
+      persistentVolumeClaim:
+        claimName: username-storage-pvc

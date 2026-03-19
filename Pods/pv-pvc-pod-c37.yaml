@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: username-energy-pv-worker-c37
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /sys/class/powercap/intel-rapl/
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - worker-c37
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: username-energy-pvc-worker-c37
+  namespace: username
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: username-energy-pv-worker-c37
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: username-pod-c37
+  namespace: username
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: worker-c37
+  containers:
+    - name: username-pod-c37
+      image: ubuntu
+      command: ["/bin/bash", "-c", "sleep infinity"]
+      volumeMounts:
+        - mountPath: /energy-data/node-c37
+          name: energy-volume
+          readOnly: true
+        - mountPath: /private-data
+          name: private-volume
+  volumes:
+    - name: energy-volume
+      persistentVolumeClaim:
+        claimName: username-energy-pvc-worker-c37
+    - name: private-volume
+      persistentVolumeClaim:
+        claimName: username-pvc
