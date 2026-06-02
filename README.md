@@ -81,3 +81,29 @@ On different hardware, other values might produce better results.
 
 - **Very short tasks (sub-second)** can be missed by polling/sampling, which may bias attribution.
 - RAPL covers **CPU package** and (where available) **DRAM** energy; storage/network/accelerator energy is not covered.
+
+## Publication
+
+This repository accompanies our preprint, "Nf-PEAK: Process-Based Energy Attribution for Nextflow Workflows on Kubernetes Clusters", which presents Nf-PEAK as a method for attributing CPU package and DRAM energy consumption to individual Nextflow tasks on Kubernetes clusters.
+
+Please cite our preprint:
+
+Philipp Thamm, Somayeh Mohammadi, Kathleen West, Knut Reinert, Lauritz Thamsen, Ulf Leser. "Nf-PEAK: Process-Based Energy Attribution for Nextflow Workflows on Kubernetes Clusters." arXiv, 2026. DOI: 10.48550/arXiv.2605.22393.
+
+BibTeX:
+```
+@misc{thamm_nf-peak_2026,
+  title = {Nf-{PEAK}: {Process}-{Based} {Energy} {Attribution} for {Nextflow} {Workflows} on {Kubernetes} {Clusters}},
+  copyright = {Creative Commons Attribution 4.0 International},
+  shorttitle = {Nf-{PEAK}},
+  url = {https://arxiv.org/abs/2605.22393},
+  doi = {10.48550/ARXIV.2605.22393},
+  language = {en},
+  urldate = {2026-05-29},
+  publisher = {arXiv},
+  author = {Thamm, Philipp and Mohammadi, Somayeh and West, Kathleen and Reinert, Knut and Thamsen, Lauritz and Leser, Ulf},
+  year = {2026},
+  note = {Version Number: 1},
+  keywords = {Distributed, Parallel, and Cluster Computing (cs.DC), FOS: Computer and information sciences},
+}
+```
